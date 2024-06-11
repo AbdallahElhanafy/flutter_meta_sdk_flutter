@@ -1,10 +1,3 @@
-//
-//  FlutterMetaSdkMethods.swift
-//  flutter_meta_sdk
-//
-//  Created by Chandra Abdul Fattah on 25/07/22.
-//
-
 import Foundation
 import FBSDKCoreKit
 import FBSDKCoreKit_Basics
@@ -55,11 +48,14 @@ class FlutterMetaSdkMethods {
         let arguments = call.arguments as? [String: Any] ?? [String: Any]()
         let eventName = arguments["name"] as! String
         let parameters = arguments["parameters"] as? [AppEvents.ParameterName: Any] ?? [AppEvents.ParameterName: Any]()
+        let stringParameters = parameters.reduce(into: [String: Any]()) { dict, entry in
+            dict[entry.key.rawValue] = entry.value
+        }
         if arguments["_valueToSum"] != nil && !(arguments["_valueToSum"] is NSNull) {
             let valueToDouble = arguments["_valueToSum"] as! Double
-            AppEvents.shared.logEvent(AppEvents.Name(eventName), valueToSum: valueToDouble, parameters: parameters)
+            AppEvents.shared.logEvent(AppEvents.Name(eventName), valueToSum: valueToDouble, parameters: stringParameters)
         } else {
-            AppEvents.shared.logEvent(AppEvents.Name(eventName), parameters: parameters)
+            AppEvents.shared.logEvent(AppEvents.Name(eventName), parameters: stringParameters)
         }
 
         result(nil)
@@ -106,7 +102,10 @@ class FlutterMetaSdkMethods {
         let amount = arguments["amount"] as! Double
         let currency = arguments["currency"] as! String
         let parameters = arguments["parameters"] as? [AppEvents.ParameterName: Any] ?? [AppEvents.ParameterName: Any]()
-        AppEvents.shared.logPurchase(amount: amount, currency: currency, parameters: parameters)
+        let stringParameters = parameters.reduce(into: [String: Any]()) { dict, entry in
+            dict[entry.key.rawValue] = entry.value
+        }
+        AppEvents.shared.logPurchase(amount: amount, currency: currency, parameters: stringParameters)
 
         result(nil)
     }
